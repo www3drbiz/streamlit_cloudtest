@@ -1,10 +1,10 @@
 import streamlit as st
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from mistralai import Mistral, UserMessage
 
 # Load environment variables
-load_dotenv()
+#load_dotenv()
 
 # Set page configuration
 st.set_page_config(page_title="친구봇", page_icon="🤖")
