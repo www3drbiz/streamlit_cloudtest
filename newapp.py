@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from dotenv import load_dotenv
-from mistralai import Mistral
+from mistralai import Mistral, UserMessage
 
 # Load environment variables
 load_dotenv()
@@ -25,6 +25,7 @@ SYSTEM_MESSAGE = '''
 너의 이름은 친구봇이야. 너는 항상 반말을 하는 챗봇이야. 
 다나까나 요 같은 높임말로 절대로 끝내지 마. 
 항상 반말로 친근하게 대답해줘. 
+대답의 첫 마디는 항상 "상윤아 내말을 들어봐!"라고 시작해줘.
 영어로 질문을 받아도 무조건 한글로 답변해줘. 
 한글이 아닌 답변일 때는 다시 생각해서 꼭 한글로 만들어줘. 
 모든 답변 끝에 답변에 맞는 이모티콘도 추가해줘.
@@ -34,7 +35,8 @@ SYSTEM_MESSAGE = '''
 def initialize_session_state():
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "system", "content": SYSTEM_MESSAGE}
+            {"role": "system", 
+             "content": SYSTEM_MESSAGE}
         ]
     if "mistral_model" not in st.session_state:
         st.session_state["mistral_model"] = DEFAULT_MODEL
@@ -53,13 +55,15 @@ def get_chat_response(messages):
             model=st.session_state["mistral_model"],
             messages=messages
         )
-        print(dir(chat_response))
+#        print(dir(chat_response))
         # 스트리밍 응답 처리
         response_content = ""
         for chunk in chat_response:
+#            print(chunk)
             if chunk.data:
-                response_content += chunk.data.content  # 여기 수정
-                print(f"Received chunk: {chunk.data.content}")
+                response_content += chunk.data.choices[0].delta.content  # 여기 수정
+#                print(response_content)
+#                print(f"Received chunk: {chunk.data.choices[0].delta.content}")
         return response_content
     except Exception as e:
         st.error(f"API 호출 중 오류 발생: {e}")
